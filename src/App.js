@@ -1,86 +1,72 @@
-import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import Todos from './components/Todos';
-import Header from './components/layout/header';
-import AddTodo from './components/addTodo';
-import About from './components/pages/about';
-import uuid from 'uuid';
+import React, { Component } from 'react'
+import Todos from './Todos'
+import Header from './Header'
+import {BrowserRouter as Router, Route} from 'react-router-dom'
+import About from './About'
 
-export class App extends Component {
-
-  constructor(props) {
-    super(props)
-  
-    this.state = {
-       todos: [
-         {
-           id: uuid.v4(),
-           title: "wake up",
-           completed: false
-         },
-         {
-          id: uuid.v4(),
-          title: "take shower",
-          completed: true
-        },
-        {
-          id: uuid.v4(),
-          title: "brush teeth",
-          completed: false
-        },
-       ]
+export class TodoApp extends Component {
+    constructor(props) {
+        super(props)
+    
+        this.state = {
+             todos: [
+                 {
+                     id: 1,
+                     title: "item 1",
+                     isCompleted: false
+                 },
+                 {
+                    id: 2,
+                    title: "item 2",
+                    isCompleted: false
+                },
+                {
+                    id: 3,
+                    title: "item 3",
+                    isCompleted: false
+                }
+             ]
+        }
     }
-  }
-  
-  //toggle complete
-  markComplete = (id) => {
-    // console.log(id);
-    this.setState({todos: this.state.todos.map(todo => {
-      if(todo.id === id){
-        todo.completed = !todo.completed;
-      }
-      return todo;
-    })})
-  }
 
-  handleDelete = (id) => {
-    // console.log(id);
-    this.setState({todos: [...this.state.todos.filter(todo => {
-      return todo.id !== id;
-    })]})
-
-  }
-
-  handleTodo = (title) => {
-    const newTodo = {
-      id: uuid.v4(),
-      title,
-      completed: false
+    handleComplete = (id) => {
+        this.setState({todos: this.state.todos.map(item => {
+            if(item.id === id){
+                item.isCompleted = !item.isCompleted
+            }
+            return item
+        })})
     }
-     this.setState({todos: [...this.state.todos, newTodo]});
-  }
 
-  render() {
+    handleDelete = (id) => {
+        this.setState({todos: this.state.todos.filter(item => item.id !== id)})
+    }
+    
+    render() {
+        return (
+            <Router>
+                <div>
+                    <Header/>
+                    <Route path="/" exact render={props => (
+                        <React.Fragment>
+                            {
+                                this.state.todos.map(item => {
+                                    return <Todos 
+                                            key={item.id} 
+                                            todo={item} 
+                                            OnComplete={this.handleComplete}
+                                            OnDelete={this.handleDelete}
+                                        />
+                                })
+                            }
+                        </React.Fragment>
+                    )} />
 
-    console.log(this.state.todos);
-
-    return (
-      <Router>
-        <div className="App">
-          <div className="container">
-            <Header />
-            <Route exact path="/" render={props => (
-              <React.Fragment>
-                <AddTodo addTodo={this.handleTodo}/>
-                <Todos todos={this.state.todos} markComplete={this.markComplete} onDelete={this.handleDelete}/>
-              </React.Fragment>
-            )}/>
-            <Route path="/about" component={About}/>
-          </div>
-        </div>
-      </Router>
-    )
-  }
+                    <Route path="/about" component={About} />
+                </div>
+            </Router>
+        )
+    }
 }
 
-export default App;
+export default TodoApp
